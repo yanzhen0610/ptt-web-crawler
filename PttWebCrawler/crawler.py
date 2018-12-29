@@ -40,7 +40,7 @@ def parse_articles(start, end, board, timeout=3):
                     # ex. link would be <a href="/bbs/PublicServan/M.1127742013.A.240.html">Re: [問題] 職等</a>
                     href = div.find('a')['href']
                     link = PTT_URL + href
-                    article_id = re.sub('\.html', '', href.split('/')[-1])
+                    article_id = re.sub('\\.html', '', href.split('/')[-1])
                     result.append(parse(link, article_id, board))
                 except:
                     pass
