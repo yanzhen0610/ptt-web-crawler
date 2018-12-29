@@ -27,10 +27,13 @@ def parse_articles(start, end, board, timeout=3):
     for i in range(end-start+1):
         index = start + i
         print('Processing index:', str(index))
-        resp = requests.get(
-            url = PTT_URL + '/bbs/' + board + '/index' + str(index) + '.html',
-            cookies={'over18': '1'}, verify=VERIFY, timeout=timeout
-        )
+        try:
+            resp = requests.get(
+                url = PTT_URL + '/bbs/' + board + '/index' + str(index) + '.html',
+                cookies={'over18': '1'}, verify=VERIFY, timeout=timeout
+            )
+        except:
+            continue
         if resp.status_code != 200:
             print('invalid url:', resp.url)
             continue
@@ -43,12 +46,12 @@ def parse_articles(start, end, board, timeout=3):
                 href = div.find('a')['href']
                 link = PTT_URL + href
                 article_id = re.sub('\\.html', '', href.split('/')[-1])
-                thread = threading.Thread(target=lambda:
-                    result.append(parse(link, article_id, board)))
-                thread.start()
-                threads.append(thread)
             except:
-                pass
+                continue
+            thread = threading.Thread(target=lambda:
+                result.append(parse(link, article_id, board, timeout)))
+            thread.start()
+            threads.append(thread)
         for thread in threads:
             thread.join()
     return result
@@ -61,7 +64,10 @@ def parse_article(article_id, board):
 
 def parse(link, article_id, board, timeout=3):
     print('Processing article:', article_id)
-    resp = requests.get(url=link, cookies={'over18': '1'}, verify=VERIFY, timeout=timeout)
+    try:
+        resp = requests.get(url=link, cookies={'over18': '1'}, verify=VERIFY, timeout=timeout)
+    except:
+        return None
     if resp.status_code != 200:
         print('invalid url:', resp.url)
         return None
@@ -150,10 +156,13 @@ def parse(link, article_id, board, timeout=3):
 
 
 def getLastPage(board, timeout=3):
-    content = requests.get(
-        url= 'https://www.ptt.cc/bbs/' + board + '/index.html',
-        cookies={'over18': '1'}, timeout=timeout
-    ).content.decode('utf-8')
+    try:
+        content = requests.get(
+            url= 'https://www.ptt.cc/bbs/' + board + '/index.html',
+            cookies={'over18': '1'}, timeout=timeout
+        ).content.decode('utf-8')
+    except:
+        return -1
     first_page = re.search(r'href="/bbs/' + board + '/index(\d+).html">&lsaquo;', content)
     if first_page is None:
         return 1
