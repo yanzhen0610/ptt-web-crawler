@@ -8,6 +8,7 @@ import sys
 import requests
 import argparse
 import time
+import threading
 from bs4 import BeautifulSoup
 from six import u
 
@@ -22,30 +23,35 @@ if sys.version_info[0] < 3:
 
 
 def parse_articles(start, end, board, timeout=3):
-        result = list()
-        for i in range(end-start+1):
-            index = start + i
-            print('Processing index:', str(index))
-            resp = requests.get(
-                url = PTT_URL + '/bbs/' + board + '/index' + str(index) + '.html',
-                cookies={'over18': '1'}, verify=VERIFY, timeout=timeout
-            )
-            if resp.status_code != 200:
-                print('invalid url:', resp.url)
-                continue
-            soup = BeautifulSoup(resp.text, 'html.parser')
-            divs = soup.find_all("div", "r-ent")
-            for div in divs:
-                try:
-                    # ex. link would be <a href="/bbs/PublicServan/M.1127742013.A.240.html">Re: [問題] 職等</a>
-                    href = div.find('a')['href']
-                    link = PTT_URL + href
-                    article_id = re.sub('\\.html', '', href.split('/')[-1])
-                    result.append(parse(link, article_id, board))
-                except:
-                    pass
-            time.sleep(0.1)
-        return result
+    result = list()
+    for i in range(end-start+1):
+        index = start + i
+        print('Processing index:', str(index))
+        resp = requests.get(
+            url = PTT_URL + '/bbs/' + board + '/index' + str(index) + '.html',
+            cookies={'over18': '1'}, verify=VERIFY, timeout=timeout
+        )
+        if resp.status_code != 200:
+            print('invalid url:', resp.url)
+            continue
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        divs = soup.find_all("div", "r-ent")
+        threads = list()
+        for div in divs:
+            try:
+                # ex. link would be <a href="/bbs/PublicServan/M.1127742013.A.240.html">Re: [問題] 職等</a>
+                href = div.find('a')['href']
+                link = PTT_URL + href
+                article_id = re.sub('\\.html', '', href.split('/')[-1])
+                thread = threading.Thread(target=lambda:
+                    result.append(parse(link, article_id, board)))
+                thread.start()
+                threads.append(thread)
+            except:
+                pass
+        for thread in threads:
+            thread.join()
+    return result
 
 
 def parse_article(article_id, board):
