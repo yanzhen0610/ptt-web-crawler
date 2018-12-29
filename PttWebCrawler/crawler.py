@@ -5,11 +5,9 @@ from __future__ import print_function
 import os
 import re
 import sys
-import json
 import requests
 import argparse
 import time
-import codecs
 from bs4 import BeautifulSoup
 from six import u
 
