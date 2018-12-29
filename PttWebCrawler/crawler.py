@@ -58,7 +58,7 @@ def parse(link, article_id, board, timeout=3):
     resp = requests.get(url=link, cookies={'over18': '1'}, verify=VERIFY, timeout=timeout)
     if resp.status_code != 200:
         print('invalid url:', resp.url)
-        return json.dumps({"error": "invalid url"}, sort_keys=True, ensure_ascii=False)
+        return None
     soup = BeautifulSoup(resp.text, 'html.parser')
     main_content = soup.find(id="main-content")
     metas = main_content.select('div.article-metaline')
