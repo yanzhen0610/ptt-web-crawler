@@ -21,7 +21,7 @@ if sys.version_info[0] < 3:
     requests.packages.urllib3.disable_warnings()
 
 
-def parse_articles(start, end, board, path='.', timeout=3):
+def parse_articles(start, end, board, timeout=3):
         result = list()
         for i in range(end-start+1):
             index = start + i
@@ -48,7 +48,7 @@ def parse_articles(start, end, board, path='.', timeout=3):
         return result
 
 
-def parse_article(article_id, board, path='.'):
+def parse_article(article_id, board):
     link = PTT_URL + '/bbs/' + board + '/' + article_id + '.html'
     return parse(link, article_id, board)
 
