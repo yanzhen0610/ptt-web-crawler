@@ -67,6 +67,7 @@ def parse(link, article_id, board, timeout=3):
     try:
         resp = requests.get(url=link, cookies={'over18': '1'}, verify=VERIFY, timeout=timeout)
     except:
+        print('process article failed:', article_id)
         return None
     if resp.status_code != 200:
         print('invalid url:', resp.url)
@@ -152,6 +153,7 @@ def parse(link, article_id, board, timeout=3):
         'messages': messages
     }
     # print 'original:', d
+    print('process article done:', article_id)
     return data
 
 
