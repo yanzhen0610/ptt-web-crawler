@@ -153,7 +153,7 @@ def parse(link, article_id, board, timeout=3):
         'messages': messages
     }
     # print 'original:', d
-    print('process article done:', article_id)
+    print('Processed article:', article_id)
     return data
 
 
