@@ -1,5 +1,6 @@
 argparse
 beautifulsoup4
+certifi
 requests
 six
 pyOpenSSL

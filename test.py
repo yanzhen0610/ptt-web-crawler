@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
-from PttWebCrawler.crawler import PttWebCrawler as crawler
+from PttWebCrawler import crawler
 import codecs, json, os
 
 
